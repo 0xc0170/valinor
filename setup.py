@@ -42,8 +42,7 @@ setup(
         'setuptools',
         'colorama>=0.3,<0.4',
         'pyOCD>=0.3,<1.0',
-        'project_generator>=0.7.0,<0.8.0',
-        'project_generator_definitions>=0.1.0,<0.2.0'
+        'project_generator>=0.7.0,<0.8.0'
     ],
     tests_require=[
         'nose',

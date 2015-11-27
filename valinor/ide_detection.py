@@ -14,7 +14,7 @@ from project_generator import tools_supported
 from project_generator_definitions.definitions import ProGenDef
 
 from valinor.gdb import launcher as gdb_launcher
-from valinor.gdb import arm_none_eabi_launcher as arm_none_eabi_gdb_launcher
+from valinor.gdb import arm_none_eabi_launcher as arm_none_eabi_gdb_launcher, pyocd_server_launcher
 
 # cache the detected IDEs, (map of ide name to a function(projectfiles,
 # executable) that will launch it)
@@ -25,7 +25,7 @@ IDEs_Scanned = False
 
 # preferred order of IDEs if multiple are available
 IDE_Preference = [
-    'uvision', 'arm_none_eabi_gdb', 'gdb'
+    'uvision', 'arm_none_eabi_gdb', 'gdb', 'visual_studio_gdb'
 ]
 
 
@@ -88,6 +88,7 @@ IDE_Scanners = {
               'uvision': (_find_uvision, _uvision_launcher),
                   'gdb': (_find_generic_gdb, gdb_launcher),
     'arm_none_eabi_gdb': (_find_arm_none_eabi_gdb, arm_none_eabi_gdb_launcher),
+    'visual_studio_gdb': (_find_arm_none_eabi_gdb, pyocd_server_launcher),
 }
 
 def _ensure_IDEs_scanned():

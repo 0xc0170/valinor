@@ -92,4 +92,22 @@ def arm_none_eabi_launcher(gdb_exe):
         queue.put('kill')
     return launch_arm_gdb
 
+def pyocd_server_launcher(gdb_exe):
+    def launch_pyocd(projectfiles, executable):
+        queue = multiprocessing.Queue()
+        p = multiprocessing.Process(target=_launchPyOCDGDBServer, args=(queue,))
+        p.start()
+        # wait for an 'alive' message from the server before starting gdb
+        # itself:
+        msg = None
+        while msg != 'alive':
+            try:
+                msg = queue.get(timeout=1.0)
+            except Queue.Empty as e:
+                msg = None
+                pass
+            if msg == 'dead' or not p.is_alive():
+                raise Exception('gdb server failed to start')
+        signal.signal(signal.SIGINT, _ignoreSignal);
+    return launch_pyocd
 

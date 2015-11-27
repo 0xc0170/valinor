@@ -14,8 +14,8 @@ def read(fname):
 setup(
     name = "valinor",
     version = "0.0.10",
-    author = 'Martin Kojtal, Matthew Else, James Crosby',
-    author_email = "c0170@rocketmail.com, matthewelse1997@gmail.com, James.Crosby@arm.com",
+    author = 'Martin Kojtal, James Crosby',
+    author_email = "c0170@rocketmail.com, James.Crosby@arm.com",
     description = ("Generate IDE project files to debug ELF files."),
     license = "Apache-2.0",
     keywords = "debug c cpp project generator embedded",
@@ -42,6 +42,7 @@ setup(
         'setuptools',
         'colorama>=0.3,<0.4',
         'pyOCD>=0.3,<1.0',
+        'pyelftools==0.23',
         'project_generator>=0.7.0,<0.8.0'
     ],
     tests_require=[

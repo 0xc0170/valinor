@@ -24,6 +24,23 @@ import valinor.ide_detection as ide_detection
 from project_generator.project import Project
 from project_generator.generate import Generator
 from project_generator.settings import ProjectSettings
+from elftools.elf.elffile import ELFFile
+
+def get_files_from_executable(filename):
+    with open(filename, 'rb') as f:
+        elffile = ELFFile(f)
+
+        if not elffile.has_dwarf_info():
+            logging.info("File does not have dwarf info, no sources in the project file")
+            return
+        dwarfinfo = elffile.get_dwarf_info()
+
+    files = []
+    # Go over all the line programs in the DWARF information and get source files paths
+    for CU in dwarfinfo.iter_CUs():
+        top_DIE = CU.get_top_DIE()
+        files.append(top_DIE.get_full_path())
+    return files
 
 def main():
     logging_setup.init()
@@ -101,6 +118,8 @@ def main():
 
     projectfile_dir = args.project_dir or executable_dir
 
+    files = get_files_from_executable(args.executable)
+
     # pass empty data to the tool for things we don't care about when just
     # debugging (in the future we could add source files by reading the debug
     # info from the file being debugged)
@@ -114,12 +133,13 @@ def main():
             'output_dir': {
                 'rel_path' : [''],
                 'path' : [os.path.relpath(executable_dir, projectfile_dir) + os.path.sep],
-            }
+            },
+            'sources': {'Source_Files':[f for f in files]},
         }
     }
 
-    project = Project(file_base_name, [project_data], generator)
-    project.export(ide_tool, False)
+    project = Project(file_base_name, [project_data], project_settings)
+    project.generate(ide_tool, False)
 
     # perform any modifications to the executable itself that are necessary to
     # debug it (for example, to debug an ELF with Keil uVision, it must be
